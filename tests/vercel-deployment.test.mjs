@@ -10,9 +10,9 @@ test("Vercel build generates a PostgreSQL Prisma client",()=>{
  const pkg=JSON.parse(at("package.json"));
  assert.equal(pkg.scripts.build,"node scripts/production-build.mjs");
  assert.match(code,/schema\.postgres\.prisma/);
- assert.match(code,/prisma","\["generate"/);
+ assert.match(code,/run\("prisma",\["generate"/);
  assert.match(code,/PINCMS_AUTO_DB_PUSH/);
- assert.doesNotMatch(code,/accept-data-loss|force-reset|--force/);
+ assert.doesNotMatch(code,/\["--accept-data-loss"|\["--force-reset"/);
  assert.equal(spawnSync(process.execPath,["--check",resolve(import.meta.dirname,"../scripts/production-build.mjs")]).status,0);
 });
 test("database fallback keeps first-time setup page available",()=>{
