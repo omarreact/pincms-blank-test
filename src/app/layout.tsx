@@ -2,13 +2,13 @@ import "./globals.css";
 import type {Metadata} from "next";
 import {getActiveTheme} from "@/lib/theme";
 import {prisma} from "@/lib/db";
-import {databaseSchemaMissing} from "@/lib/database-status";
+import {databaseUnavailable} from "@/lib/database-status";
 import Link from "next/link";
 import React from "react";
 export const dynamic="force-dynamic";
 async function siteName():Promise<string>{
  try{return (await prisma.setting.findUnique({where:{key:"siteName"}}))?.value||"PinCMS"}
- catch(error){if(databaseSchemaMissing(error))return "PinCMS";throw error}
+ catch(error){if(databaseUnavailable(error))return "PinCMS";throw error}
 }
 export async function generateMetadata():Promise<Metadata>{
   const title=await siteName();
