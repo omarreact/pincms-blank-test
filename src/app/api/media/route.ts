@@ -1,0 +1,7 @@
+import {NextRequest,NextResponse} from "next/server";
+import {prisma} from "@/lib/db";
+import {hasRole,denied} from "@/lib/security";
+import {MAX_IMAGE_BYTES,imageMime,storeImage} from "@/lib/media-storage";
+export const runtime="nodejs";
+export async function GET(){if(!await hasRole())return denied();return NextResponse.json(await prisma.media.findMany({orderBy:{createdAt:"desc"}}));}
+export async function POST(req:NextRequest){const user=await hasRole("AUTHOR");if(!user)return denied();try{const form=await req.formData();const file=form.get("file");if(!(file instanceof File))return NextResponse.json({error:"Select an image"},{status:400});if(file.size===0||file.size>MAX_IMAGE_BYTES)return NextResponse.json({error:"Image must be smaller than 8 MB"},{status:413});const bytes=Buffer.from(await file.arrayBuffer());const mime=imageMime(bytes);if(!mime)return NextResponse.json({error:"Supported image formats: JPEG, PNG, WebP, GIF"},{status:415});const saved=await storeImage(bytes,mime);const media=await prisma.media.create({data:{filename:file.name.slice(0,200),originalName:file.name.slice(0,200),mimeType:mime,size:bytes.length,url:saved.url,uploadedById:user.id,alt:String(form.get("alt")??"").slice(0,300)}});return NextResponse.json({...media,provider:saved.provider},{status:201})}catch(e){return NextResponse.json({error:e instanceof Error?e.message:"Upload failed"},{status:500})}}
