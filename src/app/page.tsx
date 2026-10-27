@@ -1,6 +1,6 @@
 import Link from "next/link";
 import {prisma} from "@/lib/db";
-import {databaseSchemaMissing} from "@/lib/database-status";
+import {databaseUnavailable} from "@/lib/database-status";
 import {publishedPage,blockPayload} from "@/lib/content";
 import {BlockRenderer} from "@/components/blocks/BlockRenderer";
 export const dynamic="force-dynamic";
@@ -9,11 +9,11 @@ export default async function Home(){
  let installed:number;
  try{installed=await prisma.user.count();}
  catch(error){
-  if(!databaseSchemaMissing(error))throw error;
+  if(!databaseUnavailable(error))throw error;
   return <main className="mx-auto max-w-3xl px-6 py-24">
    <h1 className="text-4xl font-bold">Complete your website setup</h1>
-   <p className="mt-5 text-lg opacity-70">Your new site is running, but the local database tables are not initialized.</p>
-   <p className="mt-4">In your application directory, run npm run dev to initialize local SQLite safely.</p>
+   <p className="mt-5 text-lg opacity-70">The database is not ready yet. Check the PostgreSQL connection and schema initialization.</p>
+   <p className="mt-4">On Vercel, configure DATABASE_URL and initialize the PostgreSQL schema. For local development, run npm run dev.</p>
    <Link className="mt-7 inline-block underline" href="/admin/setup">Open the setup wizard →</Link>
   </main>;
  }
