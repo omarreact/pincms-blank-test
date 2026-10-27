@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "node scripts/start-dev.mjs",
-    "build": "next build",
+    "build": "node scripts/production-build.mjs",
     "start": "next start",
     "lint": "eslint .",
     "db:generate": "prisma generate",
