@@ -1,0 +1,33 @@
+{
+  "name": "PinCMS Standalone",
+  "version": "1.0.0",
+  "styles": {
+    "colors": {
+      "primary": "#4657e8",
+      "secondary": "#101828",
+      "background": "#ffffff",
+      "foreground": "#142038",
+      "muted": "#f1f5ff",
+      "accent": "#21cda4"
+    },
+    "fonts": {
+      "heading": "system-ui",
+      "body": "system-ui"
+    }
+  },
+  "layouts": {
+    "header": "default-header",
+    "footer": "default-footer"
+  },
+  "templates": {
+    "home": "home",
+    "page": "default"
+  },
+  "availableBlocks": [
+    "hero",
+    "text",
+    "image",
+    "cta",
+    "features"
+  ]
+}

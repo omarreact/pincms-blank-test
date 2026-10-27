@@ -1,0 +1,33 @@
+{
+  "name": "PinCMS Midnight",
+  "version": "1.0.0",
+  "styles": {
+    "colors": {
+      "primary": "#7c90ff",
+      "secondary": "#f6f8ff",
+      "background": "#0d1426",
+      "foreground": "#f0f4ff",
+      "muted": "#202b46",
+      "accent": "#34e8c0"
+    },
+    "fonts": {
+      "heading": "system-ui",
+      "body": "system-ui"
+    }
+  },
+  "layouts": {
+    "header": "default-header",
+    "footer": "default-footer"
+  },
+  "templates": {
+    "home": "home",
+    "page": "default"
+  },
+  "availableBlocks": [
+    "hero",
+    "text",
+    "image",
+    "cta",
+    "features"
+  ]
+}

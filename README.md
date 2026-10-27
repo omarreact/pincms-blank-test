@@ -1,4 +1,4 @@
-# Your Next.js website — powered by PinCMS
+# PinCMS Blank Test — standalone Next.js CMS
 
 **FRESH STARTER — this ZIP installs your own Next.js website and private CMS admin, not the PinCMS product/documentation website.**
 
@@ -52,3 +52,9 @@ Installation guide: https://pincms.pincodeit.com/docs/quickstart
 Developer documentation: https://pincms.pincodeit.com/docs/overview
 
 WordPress migration is beta; review any imported drafts before publication. A successful development build alone does not establish production readiness.
+
+## Source and testing
+
+This public repository contains only the distributable blank CMS starter from `omarreact/PinCMS` at commit `da012179d384c0fdeaeb9d2fec2ad21eb220cefc`. It does **not** contain the PinCMS marketing or docs website, production credentials, demo admins, or an initialized database.
+
+The Visual Studio foundation from the feature branch adds responsive Content / Style / Advanced inspector controls and stable block IDs. Advanced Elementor-inspired capabilities in the roadmap are not yet complete. GitHub Actions runs the blank application's own tests, type checks, and builds; tests from the original monorepo are adapted for this standalone repository.
