@@ -39,7 +39,7 @@ export default function SetupPage(){
  const completed=done||Boolean(status&&!status.needed&&!done);
  const progress=Math.round((step+1)/sections.length*100);
  const canContinue=step===0?true:step===1?databaseReady&&secureReady&&tokenReady:
-  step===2?mediaMode!=="local"||!hosted:step===3?siteName.trim().length>=2:
+  step===2?mediaMode==="cloudinary"?mediaTest==="verified":mediaMode!=="local"||!hosted:step===3?siteName.trim().length>=2:
   step===4?name.trim().length>=2&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)&&passwordStrong:step===5;
  function changeCredentials(key:keyof CloudCredentials,value:string){setCredentials(v=>({...v,[key]:value}));setMediaTest("idle")}
  function chooseMedia(mode:Mode){setMediaMode(mode);setMediaTest("idle");setNotice("")}
