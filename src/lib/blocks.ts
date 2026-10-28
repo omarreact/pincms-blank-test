@@ -1,3 +1,4 @@
+import {extraLabels,extraDefaults} from "./extra-widgets";
 export type Block={id:string;type:string;order:number;data:Record<string,any>};
 export const blockLabels:Record<string,string>={hero:"Hero",heading:"Heading",dualHeading:"Dual-color heading",iconBox:"Icon box",text:"Text",image:"Image",gallery:"Gallery",video:"Video",cta:"Call to action",columns:"Columns",features:"Features",testimonials:"Testimonials",pricing:"Pricing",faq:"FAQ",stats:"Stats",button:"Button",divider:"Divider",spacer:"Spacer",html:"HTML (text only)",form:"Form",starRating:"Star rating",progressBar:"Progress bar",alert:"Alert",iconList:"Icon list",socialIcons:"Social icons",contactButtons:"Contact buttons",tabs:"Tabs",countdown:"Countdown",imageCarousel:"Image carousel"};
 export const defaultBlockData:Record<string,Record<string,any>>={
@@ -12,3 +13,6 @@ export const defaultBlockData:Record<string,Record<string,any>>={
  faq:{items:[{question:"What is PinCMS?",answer:"A modern website editor for Next.js."}]},stats:{items:[{value:"100%",label:"Your content"}]},
  button:{label:"Read more",url:"#"},divider:{},spacer:{height:"md"},html:{code:"<p>For safety, HTML blocks render as escaped source.</p>"},form:{slug:"contact"},starRating:{rating:4.5,label:"Customer rating"},progressBar:{value:65,label:"Progress"},alert:{title:"Notice",content:"Add an important announcement.",tone:"info"},iconList:{items:[{icon:"✓",title:"First benefit",url:""},{icon:"✓",title:"Second benefit",url:""}]},socialIcons:{items:[{icon:"f",title:"Facebook",url:"https://facebook.com"},{icon:"in",title:"LinkedIn",url:"https://linkedin.com"}]},contactButtons:{floating:false,items:[{icon:"✉",title:"Email us",url:"mailto:hello@example.com"}]},tabs:{items:[{title:"Overview",content:"Edit this tab."},{title:"Details",content:"Edit the second tab."}]},countdown:{target:"2027-01-01T00:00:00Z",label:"Until launch"},imageCarousel:{items:[{src:"",alt:""}]}
 };
+
+Object.assign(blockLabels,extraLabels);
+Object.assign(defaultBlockData,extraDefaults);

@@ -2,7 +2,9 @@
 import {safeHref,safeImage,plainText} from "@/lib/safe-content";
 import type {Block} from "@/lib/blocks";
 import React from "react";
-import {frameStyleVariables} from "@/lib/block-style";
+import {frameStyleVariables,validatedStyle} from "@/lib/block-style";
+import {childrenOf} from "@/lib/builder-tree";
+import {ExtraWidgetRenderer} from "@/components/blocks/ExtraWidgetRenderer";
 import {FormWidget} from "@/components/forms/FormWidget";
 import {TabsWidget,CountdownWidget,ImageCarouselWidget,IconListWidget,ContactButtonsWidget} from "@/components/blocks/InteractiveWidgets";
 const section="mx-auto max-w-6xl px-6";
@@ -13,6 +15,7 @@ function pic(url:unknown,alt:unknown,cls="w-full rounded-2xl object-cover"){cons
 export function BlockRenderer({blocks,selectedId,onSelect}:{blocks:Block[];selectedId?:string;onSelect?:(id:string)=>void}){
  return <div className="site-blocks">{[...blocks].sort((a,b)=>a.order-b.order).map((b)=>{const d=b.data as Record<string,any>;
   const render=()=>{switch(b.type){
+  case "container":case "row":case "column":case "grid": {const direction=b.type==="row"?"row":b.type==="grid"?"grid":String(d.direction||"column");const gap=Math.min(64,Math.max(0,Number(d.gap)||16));return <div className={"pc-public-layout pc-public-"+b.type} style={{display:direction==="grid"?"grid":"flex",flexDirection:direction==="row"?"row":"column",flexWrap:direction==="row"?"wrap":"nowrap",gap:gap+"px",padding:validatedStyle("padding",d.padding)||undefined,gridTemplateColumns:direction==="grid"?"repeat(auto-fit,minmax(min(100%,230px),1fr))":undefined}}>{childrenOf(b).map(child=><div className="pc-public-child" key={child.id}><BlockRenderer blocks={[child]}/></div>)}</div>}
   case "hero": return <section key={b.id} className="site-hero relative overflow-hidden px-6 py-24 md:py-36" style={safeImage(d.backgroundImage)?{backgroundImage:`linear-gradient(90deg,rgba(9,18,39,.82),rgba(9,18,39,.54)), url('${safeImage(d.backgroundImage)}')`,backgroundSize:"cover",backgroundPosition:"center"}:undefined}><div className={`${section} ${d.alignment==="center"?"text-center":""}`}><span className="mb-4 inline-flex rounded-full bg-white/15 px-4 py-1 text-sm font-semibold text-white">Made with PinCMS</span><h1 className="max-w-4xl text-5xl font-bold tracking-tight text-white md:text-7xl">{field(d,"headline")}</h1><p className="mt-6 max-w-2xl text-xl text-white/85">{field(d,"subheadline")}</p>{d.buttonText&&<a className="mt-8 inline-flex rounded-xl bg-white px-7 py-3 font-semibold text-slate-950" href={link(d.buttonUrl)}>{field(d,"buttonText")} →</a>}</div></section>;
   case "heading":return <section key={b.id} className={`${section} py-8`}><h2 className="text-3xl font-bold tracking-tight md:text-5xl">{field(d,"text")}</h2></section>;
   case "dualHeading":return <section className={section+" py-8"}><h2 className="text-3xl font-bold tracking-tight md:text-5xl">{field(d,"before")} <span className="text-[var(--site-primary)]">{field(d,"accent")}</span> {field(d,"after")}</h2></section>;
@@ -39,7 +42,7 @@ export function BlockRenderer({blocks,selectedId,onSelect}:{blocks:Block[];selec
   case "imageCarousel":return <section className={section+" py-9"}><ImageCarouselWidget items={Array.isArray(d.items)?d.items:[]}/></section>;
   case "form":return <section className={section+" py-10"}><FormWidget slug={String(d.slug||"")} preview={Boolean(onSelect)}/></section>;
   case "html":return <pre key={b.id} className={`${section} overflow-x-auto whitespace-pre-wrap text-sm opacity-70`}>{field(d,"code")}</pre>;
-  default:return <div key={b.id} className={`${section} py-6 text-sm opacity-60`}>Unsupported block type: {b.type}</div>;
+  default:return <ExtraWidgetRenderer type={b.type} data={d} preview={Boolean(onSelect)}/>;
 
  }};
  const anchor=typeof d.anchor==="string"&&/^[a-zA-Z][a-zA-Z0-9_-]{0,79}$/.test(d.anchor)?d.anchor:undefined;

@@ -1,11 +1,21 @@
 "use client";
 import {useState} from "react";
+import {MediaPicker} from "@/components/editor/MediaPicker";
 import type {Block} from "@/lib/blocks";
 import {breakpoints, styleLabels, validatedStyle} from "@/lib/block-style";
 import type {Breakpoint, StyleField, BlockStyles} from "@/lib/block-style";
 
 type Field={key:string;label:string;multiline?:boolean;choices?:string[];boolean?:boolean};
 const fields:Record<string,Field[]>={
+ container:[{key:"direction",label:"Flex direction",choices:["column","row"]},{key:"gap",label:"Gap (px)"},{key:"padding",label:"Inner padding"}],
+ row:[{key:"gap",label:"Gap (px)"}],column:[{key:"gap",label:"Gap (px)"},{key:"padding",label:"Inner padding"}],grid:[{key:"gap",label:"Grid gap (px)"}],
+ googleMaps:[{key:"location",label:"Map location"},{key:"title",label:"Accessible title"}],
+ imageBox:[{key:"title",label:"Title"},{key:"content",label:"Description",multiline:true},{key:"src",label:"Image URL"},{key:"url",label:"Link"}],
+ counter:[{key:"value",label:"Number"},{key:"label",label:"Label"},{key:"prefix",label:"Prefix"},{key:"suffix",label:"Suffix"}],
+ codeHighlight:[{key:"language",label:"Language"},{key:"code",label:"Code",multiline:true}],
+ hotspot:[{key:"title",label:"Title"},{key:"src",label:"Image URL"}],
+ flipBox:[{key:"title",label:"Front text"},{key:"content",label:"Back text",multiline:true},{key:"url",label:"Link"},{key:"buttonText",label:"Button label"}],
+ animatedHeadline:[{key:"before",label:"First phrase"},{key:"accent",label:"Animated phrase"},{key:"after",label:"Ending phrase"}],
  hero:[{key:"headline",label:"Headline"},{key:"subheadline",label:"Supporting text",multiline:true},{key:"buttonText",label:"Button label"},{key:"buttonUrl",label:"Button URL"},{key:"backgroundImage",label:"Background image URL"}],
  heading:[{key:"text",label:"Heading"}],
  dualHeading:[{key:"before",label:"First text"},{key:"accent",label:"Highlighted text"},{key:"after",label:"Ending text"}],
@@ -42,7 +52,7 @@ const inputClass="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 p
 function InputField({field,value,onChange}:{field:Field;value:string;onChange:(value:string)=>void}){
  return <label className="block text-xs font-semibold text-slate-700">{field.label}{field.boolean?<input className="ml-2" type="checkbox" checked={value==="true"} onChange={e=>onChange(String(e.target.checked))}/>:field.choices?<select className={inputClass} value={value} onChange={e=>onChange(e.target.value)}>{field.choices.map(x=><option key={x} value={x}>{x}</option>)}</select>:field.multiline?
  <textarea rows={3} className={inputClass} value={value} onChange={e=>onChange(e.target.value)}/>:
- <input className={inputClass} value={value} onChange={e=>onChange(e.target.value)}/>}</label>;
+ <input className={inputClass} value={value} onChange={e=>onChange(e.target.value)}/>}{(field.key==="src"&&field.label!=="Video URL"&&field.label!=="Animation JSON URL"&&field.label!=="src"||field.key==="backgroundImage")&&<MediaPicker onPick={onChange}/>}</label>;
 }
 export function BlockInspector({block,onUpdate}:{block:Block;onUpdate:(patch:Record<string,unknown>)=>void}){
  const [tab,setTab]=useState<"content"|"style"|"advanced">("content");
@@ -61,8 +71,9 @@ export function BlockInspector({block,onUpdate}:{block:Block;onUpdate:(patch:Rec
   onUpdate({styles:{...styles,[device]:next}});
  };
  const listKey=Array.isArray(data.items)?"items":Array.isArray(data.images)?"images":null;
- const listFields=listKey?(itemFields[block.type]||[]):[];
  const listItems=listKey?(data[listKey] as Record<string,unknown>[]):[];
+ const listFields:Field[]=listKey?(itemFields[block.type]||Object.keys(listItems[0]||{title:"",content:"",url:""}).filter(key=>key!=="children"&&key!=="styles").map(key=>({key,label:key==="src"?"Image URL":key.replace(/([A-Z])/g," $1"),multiline:key==="content"||key==="description"}))):[];
+ const mainFields=fields[block.type]||Object.entries(data).filter(([key,value])=>key!=="styles"&&key!=="children"&&key!=="items"&&key!=="images"&&["string","number","boolean"].includes(typeof value)).map(([key,value])=>({key,label:key.replace(/([A-Z])/g," $1"),multiline:key==="content"||key==="description",boolean:typeof value==="boolean"}));
  const setItem=(index:number,key:string,value:string)=>{
   if(!listKey)return;
   onUpdate({[listKey]:listItems.map((item,i)=>i===index?{...item,[key]:value}:item)});
@@ -72,7 +83,7 @@ export function BlockInspector({block,onUpdate}:{block:Block;onUpdate:(patch:Rec
    {(["content","style","advanced"] as const).map(name=><button key={name} type="button" role="tab" aria-selected={tab===name} onClick={()=>{setTab(name);setError("");}} className={"flex-1 rounded-lg px-2 py-2 text-xs font-bold capitalize "+(tab===name?"bg-white text-indigo-700 shadow":"text-slate-600")}>{name}</button>)}
   </div>
   {tab==="content"&&<div className="space-y-4">
-    {(fields[block.type]||[]).map(f=><InputField key={f.key} field={f} value={String(data[f.key]??"")} onChange={v=>onUpdate({[f.key]:v})}/>)}
+    {mainFields.map(f=><InputField key={f.key} field={f} value={String(data[f.key]??"")} onChange={v=>onUpdate({[f.key]:v})}/>)}
     {listKey&&listFields.length>0&&<div className="space-y-3">
       <p className="text-xs font-bold uppercase tracking-wider text-slate-500">Repeatable items</p>
       {listItems.map((item,i)=><div key={i} className="space-y-3 rounded-xl border border-slate-200 p-3">
@@ -81,7 +92,7 @@ export function BlockInspector({block,onUpdate}:{block:Block;onUpdate:(patch:Rec
        </div>)}
       <button type="button" className="w-full rounded-lg border border-indigo-300 px-3 py-2 text-sm font-semibold text-indigo-700" onClick={()=>onUpdate({[listKey]:[...listItems,Object.fromEntries(listFields.map(f=>[f.key,""]))]})}>+ Add item</button>
     </div>}
-    {!fields[block.type]&&!listKey&&<p className="text-sm text-slate-600">This block has no text controls. Choose Style or Advanced.</p>}
+    {!mainFields.length&&!listKey&&<p className="text-sm text-slate-600">This block has no text controls. Choose Style or Advanced.</p>}
    </div>}
   {tab==="style"&&<div className="space-y-4">
     <p className="text-xs text-slate-500">Responsive styles apply to the selected block and appear on the published page. Mobile inherits tablet and desktop values.</p>
