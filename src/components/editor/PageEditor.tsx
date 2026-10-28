@@ -5,6 +5,7 @@ import {Layers,Blocks,Monitor,Tablet,Smartphone,Undo2,Redo2,Save,Send,Search,Pan
 import {BlockInspector} from "@/components/editor/BlockInspector";
 import {BuilderCanvas,type DropPayload} from "@/components/editor/BuilderCanvas";
 import {Block,blockLabels,defaultBlockData} from "@/lib/blocks";
+import {integrationWidgets} from "@/lib/extra-widgets";
 import {childrenOf,cloneNode,countNodes,findNode,findParent,insertNode,isLayout,makeNode,moveNode,normalize,patchNode,removeNode} from "@/lib/builder-tree";
 const base={title:"",slug:"",status:"DRAFT",excerpt:"",seoTitle:"",seoDesc:"",ogImage:"",publishedAt:"",blocks:[] as Block[]};
 type DocumentData=typeof base;
@@ -24,6 +25,7 @@ export function PageEditor({initial,kind="page",id}:{initial?:Partial<DocumentDa
  const setField=(key:keyof DocumentData,value:string)=>apply(v=>({...v,[key]:value}));
  const update=(nodeId:string,patch:Record<string,unknown>)=>apply(v=>({...v,blocks:patchNode(v.blocks,nodeId,patch)}));
  const add=(type:string,parent?:string|null,index?:number)=>{
+  if(integrationWidgets.has(type)){setNotice((blockLabels[type]||type)+" requires an external provider and is not enabled in this standalone test.");return}
   if(countNodes(doc.blocks)+(type==="row"||type==="grid"?3:1)>120){setNotice("Maximum 120 widgets per page.");return}
   let target=parent===undefined?(selected&&isLayout(findNode(doc.blocks,selected)?.type||"")?selected:null):parent;
   const node=makeNode(type,defaultBlockData);
@@ -84,7 +86,7 @@ export function PageEditor({initial,kind="page",id}:{initial?:Partial<DocumentDa
     {panel==="widgets"&&<div className="pc-sidebar-scroll">
       <div className="pc-search"><Search size={15}/><input aria-label="Search widgets" placeholder="Search widgets..." value={search} onChange={e=>setSearch(e.target.value)}/></div>
       <p className="pc-help">Click to add, or drag into a container or row. Select a layout first to add inside it.</p>
-      {grouped.map(([name,types])=>{const filtered=types.filter(t=>(blockLabels[t]||t).toLowerCase().includes(search.toLowerCase()));return filtered.length?<section key={name} className="pc-widget-group"><h3>{name}<span>{filtered.length}</span></h3><div className="pc-widget-grid">{filtered.map(type=><button key={type} draggable onDragStart={e=>{e.dataTransfer.effectAllowed="copy";e.dataTransfer.setData("application/x-pincms",JSON.stringify({kind:"new",type}))}} onClick={()=>add(type)} className="pc-widget" title={"Add "+(blockLabels[type]||type)}><span className="pc-widget-icon">{isLayout(type)?"▦":type.toLowerCase().includes("image")?"▧":type.toLowerCase().includes("text")?"T":"◇"}</span><span>{blockLabels[type]}</span></button>)}</div></section>:null})}
+      {grouped.map(([name,types])=>{const filtered=types.filter(t=>(blockLabels[t]||t).toLowerCase().includes(search.toLowerCase()));return filtered.length?<section key={name} className="pc-widget-group"><h3>{name}<span>{filtered.length}</span></h3><div className="pc-widget-grid">{filtered.map(type=><button key={type} draggable onDragStart={e=>{e.dataTransfer.effectAllowed="copy";e.dataTransfer.setData("application/x-pincms",JSON.stringify({kind:"new",type}))}} onClick={()=>add(type)} className={"pc-widget "+(integrationWidgets.has(type)?"pc-widget-gated":"")} title={integrationWidgets.has(type)?"Provider required: "+(blockLabels[type]||type):"Add "+(blockLabels[type]||type)}><span className="pc-widget-icon">{isLayout(type)?"▦":type.toLowerCase().includes("image")?"▧":type.toLowerCase().includes("text")?"T":"◇"}</span><span>{blockLabels[type]}</span></button>)}</div></section>:null})}
     </div>}
     {panel==="tree"&&<div className="pc-sidebar-scroll"><div className="pc-tree-heading"><Layers size={16}/> Page structure <span>{countNodes(doc.blocks)}</span></div><Navigator nodes={doc.blocks} selected={selected} onSelect={setSelected}/><button className="pc-add-layout" onClick={()=>add("container",null)}><Plus size={16}/> New container</button></div>}
     {panel==="document"&&<div className="pc-sidebar-scroll pc-document-fields"><h3>Page settings</h3><label>Publish at<input type="datetime-local" value={doc.publishedAt} onChange={e=>setField("publishedAt",e.target.value)}/></label>{(["title","slug","excerpt","seoTitle","seoDesc","ogImage"] as const).map(key=><label key={key}>{key.replace(/([A-Z])/g," $1")}<input value={String(doc[key]||"")} onChange={e=>setField(key,e.target.value)}/></label>)}<p>Published changes update the live page immediately. Revision drafts are not supported yet.</p></div>}
