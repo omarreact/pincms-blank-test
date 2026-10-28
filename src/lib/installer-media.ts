@@ -1,19 +1,8 @@
 import {createCipheriv,createDecipheriv,createHash,randomBytes} from "node:crypto";
 import {prisma} from "@/lib/db";
-import {z} from "zod";
-
-export const cloudinaryCredentialsSchema=z.object({
- cloudName:z.string().trim().regex(/^[a-z0-9_-]{2,80}$/i),
- apiKey:z.string().trim().regex(/^[0-9]{6,32}$/),
- apiSecret:z.string().trim().min(12).max(180)
-}).strict();
+import {cloudinaryCredentialsSchema,mediaOptionSchema} from "@/lib/validators";
+import type {z} from "zod";
 export type CloudinaryCredentials=z.infer<typeof cloudinaryCredentialsSchema>;
-export const mediaOptionSchema=z.discriminatedUnion("mode",[
- z.object({mode:z.literal("local")}).strict(),
- z.object({mode:z.literal("later")}).strict(),
- z.object({mode:z.literal("existing")}).strict(),
- z.object({mode:z.literal("cloudinary"),credentials:cloudinaryCredentialsSchema}).strict()
-]);
 export type MediaOption=z.infer<typeof mediaOptionSchema>;
 
 const settingKey="storage:media:v1";
