@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import {databaseSchemaMissing} from "@/lib/database-status";
+import {databaseUnavailable} from "@/lib/database-status";
 import { themeSchema } from "@/lib/validators";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
@@ -19,7 +19,7 @@ export async function getActiveTheme(): Promise<ThemeConfig> {
     if(!theme)return DEFAULT_THEME;
     const parsed=themeSchema.safeParse(JSON.parse(theme.config)); return parsed.success?parsed.data:DEFAULT_THEME;
   } catch(error) {
-    if(databaseSchemaMissing(error))return DEFAULT_THEME;
+    if(databaseUnavailable(error))return DEFAULT_THEME;
     throw error;
   }
 }
