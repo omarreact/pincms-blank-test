@@ -5,9 +5,9 @@ import {resolve} from "node:path";
 
 const root=resolve(import.meta.dirname,"..");
 const file=path=>readFileSync(resolve(root,path),"utf8");
-test("visual editor ships in this blank app",()=>{
+test("visual editor implementation is present in the independent standalone app",()=>{
  for(const path of ["src/components/editor/BlockInspector.tsx","src/components/editor/PageEditor.tsx","src/lib/block-style.ts","src/lib/content.ts","src/lib/validators.ts","src/lib/blocks.ts"]){
-  assert.ok(file(path).length>100,path+" must exist");
+  assert.ok(file(path).length>100,path+" is missing");
  }
  for(const term of ["selectedId={selected||undefined}","onSelect={setSelected}","<BlockInspector","Duplicate block","Update published"]){
   assert.ok(file("src/components/editor/PageEditor.tsx").includes(term),term);

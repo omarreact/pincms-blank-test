@@ -3,6 +3,8 @@ import {safeHref,safeImage,plainText} from "@/lib/safe-content";
 import type {Block} from "@/lib/blocks";
 import React from "react";
 import {frameStyleVariables} from "@/lib/block-style";
+import {FormWidget} from "@/components/forms/FormWidget";
+import {TabsWidget,CountdownWidget,ImageCarouselWidget,IconListWidget,ContactButtonsWidget} from "@/components/blocks/InteractiveWidgets";
 const section="mx-auto max-w-6xl px-6";
 const button="inline-flex items-center rounded-xl bg-[var(--site-primary)] px-7 py-3 font-semibold text-white transition hover:opacity-85";
 function link(url:unknown){return safeHref(url);}
@@ -26,6 +28,16 @@ export function BlockRenderer({blocks,selectedId,onSelect}:{blocks:Block[];selec
   case "button":return <div key={b.id} className={`${section} py-6`}><a className={button} href={link(d.url)}>{field(d,"label")}</a></div>;
   case "divider":return <hr key={b.id} className="mx-auto my-8 max-w-6xl opacity-20"/>;
   case "spacer":return <div key={b.id} style={{height:({sm:28,md:60,lg:100,xl:160} as Record<string,number>)[String(d.height)]??60}}/>;
+  case "starRating":{const rating=Math.min(5,Math.max(0,Number(d.rating)||0));return <section className={section+" py-9"}><div role="img" aria-label={field(d,"label")+": "+rating+" out of 5 stars"}><span className="text-4xl tracking-widest text-amber-500" aria-hidden="true">{"★★★★★".slice(0,Math.round(rating))}{"☆☆☆☆☆".slice(Math.round(rating))}</span><span className="ml-4 font-semibold">{rating.toFixed(1)} / 5</span></div><p className="mt-2 opacity-75">{field(d,"label")}</p></section>}
+  case "progressBar":{const value=Math.min(100,Math.max(0,Number(d.value)||0));return <section className={section+" py-9"}><div className="mb-3 flex justify-between text-sm font-semibold"><span>{field(d,"label")}</span><span>{value}%</span></div><div role="progressbar" aria-valuenow={value} aria-valuemin={0} aria-valuemax={100} aria-label={field(d,"label")||"Progress"} className="h-3 overflow-hidden rounded-full bg-[var(--site-muted)]"><div className="h-full rounded-full bg-[var(--site-primary)]" style={{width:value+"%"}}/></div></section>}
+  case "alert":{const tones:Record<string,string>={info:"border-sky-300 bg-sky-50 text-sky-950",success:"border-green-300 bg-green-50 text-green-950",warning:"border-amber-300 bg-amber-50 text-amber-950",error:"border-red-300 bg-red-50 text-red-950"};return <section className={section+" py-7"}><div role="status" className={"rounded-xl border p-6 "+(tones[String(d.tone)]||tones.info)}><strong className="text-lg">{field(d,"title")}</strong><p className="mt-2 whitespace-pre-line">{plainText(d.content)}</p></div></section>}
+  case "iconList":return <section className={section+" py-9"}><IconListWidget items={Array.isArray(d.items)?d.items:[]}/></section>;
+  case "socialIcons":return <section className={section+" py-9"}><ContactButtonsWidget items={Array.isArray(d.items)?d.items:[]}/></section>;
+  case "contactButtons":return <section className={section+" py-7"}><ContactButtonsWidget items={Array.isArray(d.items)?d.items:[]} floating={(d.floating===true||d.floating==="true")&&!onSelect}/></section>;
+  case "tabs":return <section className={section+" py-9"}><TabsWidget items={Array.isArray(d.items)?d.items:[]}/></section>;
+  case "countdown":return <section className={section+" py-9"}><CountdownWidget target={field(d,"target")} label={field(d,"label")}/></section>;
+  case "imageCarousel":return <section className={section+" py-9"}><ImageCarouselWidget items={Array.isArray(d.items)?d.items:[]}/></section>;
+  case "form":return <section className={section+" py-10"}><FormWidget slug={String(d.slug||"")} preview={Boolean(onSelect)}/></section>;
   case "html":return <pre key={b.id} className={`${section} overflow-x-auto whitespace-pre-wrap text-sm opacity-70`}>{field(d,"code")}</pre>;
   default:return <div key={b.id} className={`${section} py-6 text-sm opacity-60`}>Unsupported block type: {b.type}</div>;
 

@@ -4,7 +4,7 @@ import type {Block} from "@/lib/blocks";
 import {breakpoints, styleLabels, validatedStyle} from "@/lib/block-style";
 import type {Breakpoint, StyleField, BlockStyles} from "@/lib/block-style";
 
-type Field={key:string;label:string;multiline?:boolean};
+type Field={key:string;label:string;multiline?:boolean;choices?:string[];boolean?:boolean};
 const fields:Record<string,Field[]>={
  hero:[{key:"headline",label:"Headline"},{key:"subheadline",label:"Supporting text",multiline:true},{key:"buttonText",label:"Button label"},{key:"buttonUrl",label:"Button URL"},{key:"backgroundImage",label:"Background image URL"}],
  heading:[{key:"text",label:"Heading"}],
@@ -16,6 +16,12 @@ const fields:Record<string,Field[]>={
  button:[{key:"label",label:"Label"},{key:"url",label:"Destination URL"}],
  iconBox:[{key:"icon",label:"Icon (symbol)"},{key:"title",label:"Title"},{key:"content",label:"Description",multiline:true},{key:"url",label:"Link URL"}],
  spacer:[{key:"height",label:"Size: sm, md, lg, xl"}],
+ form:[{key:"slug",label:"Form slug (create under Admin → Forms)"}],
+ starRating:[{key:"rating",label:"Rating (0 to 5)"},{key:"label",label:"Rating label"}],
+ progressBar:[{key:"value",label:"Progress percentage (0–100)"},{key:"label",label:"Progress label"}],
+ alert:[{key:"title",label:"Title"},{key:"content",label:"Description",multiline:true},{key:"tone",label:"Appearance",choices:["info","success","warning","error"]}],
+ countdown:[{key:"label",label:"Countdown label"},{key:"target",label:"Target date (ISO 8601, e.g. 2027-01-01T00:00:00Z)"}],
+ contactButtons:[{key:"floating",label:"Floating position",boolean:true}],
  html:[{key:"code",label:"Source displayed as safe text",multiline:true}]
 };
 const itemFields:Record<string,Field[]>={
@@ -25,11 +31,16 @@ const itemFields:Record<string,Field[]>={
  testimonials:[{key:"title",label:"Customer"},{key:"content",label:"Quote",multiline:true}],
  pricing:[{key:"title",label:"Plan"},{key:"content",label:"Description",multiline:true}],
  columns:[{key:"title",label:"Title"},{key:"content",label:"Content",multiline:true}],
- features:[{key:"title",label:"Title"},{key:"content",label:"Content",multiline:true}]
+ features:[{key:"title",label:"Title"},{key:"content",label:"Content",multiline:true}],
+ iconList:[{key:"icon",label:"Icon"},{key:"title",label:"Text"},{key:"url",label:"Destination URL"}],
+ socialIcons:[{key:"icon",label:"Icon"},{key:"title",label:"Label"},{key:"url",label:"Destination URL"}],
+ contactButtons:[{key:"icon",label:"Icon"},{key:"title",label:"Label"},{key:"url",label:"Destination URL"}],
+ tabs:[{key:"title",label:"Tab label"},{key:"content",label:"Tab content",multiline:true}],
+ imageCarousel:[{key:"src",label:"Image URL"},{key:"alt",label:"Alt text"}]
 };
 const inputClass="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900";
 function InputField({field,value,onChange}:{field:Field;value:string;onChange:(value:string)=>void}){
- return <label className="block text-xs font-semibold text-slate-700">{field.label}{field.multiline?
+ return <label className="block text-xs font-semibold text-slate-700">{field.label}{field.boolean?<input className="ml-2" type="checkbox" checked={value==="true"} onChange={e=>onChange(String(e.target.checked))}/>:field.choices?<select className={inputClass} value={value} onChange={e=>onChange(e.target.value)}>{field.choices.map(x=><option key={x} value={x}>{x}</option>)}</select>:field.multiline?
  <textarea rows={3} className={inputClass} value={value} onChange={e=>onChange(e.target.value)}/>:
  <input className={inputClass} value={value} onChange={e=>onChange(e.target.value)}/>}</label>;
 }
