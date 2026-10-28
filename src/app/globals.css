@@ -202,3 +202,6 @@
 @media(max-width:1170px){.pc-workspace{grid-template-columns:225px minmax(0,1fr) 248px}.pc-topbar{gap:12px}.pc-studio-label{display:none}}
 @media(max-width:900px){.pc-workspace{grid-template-columns:190px minmax(0,1fr);height:750px}.pc-inspector{grid-column:1/-1;max-height:300px;border-top:1px solid #e1e4ea}.pc-workspace{height:auto}.pc-stage{min-height:600px}.pc-top-title{display:none}}
 @media(max-width:600px){.pc-workspace{display:block}.pc-sidebar{max-height:260px}.pc-stage{min-height:550px}.pc-topbar{height:auto;min-height:62px;flex-wrap:wrap;padding:10px}.pc-top-actions{margin-left:auto;flex-wrap:wrap}.pc-top-actions button{padding:7px}.pc-stage-scroll{padding:12px}.pc-toolbar-note{display:none}}
+
+.pc-widget.pc-widget-gated{border-style:dashed;opacity:.58;background:#1b1e26}
+.pc-widget.pc-widget-gated:hover{opacity:.82;border-color:#f5bd7b}
