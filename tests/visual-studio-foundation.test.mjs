@@ -9,7 +9,7 @@ test("visual editor implementation is present in the independent standalone app"
  for(const path of ["src/components/editor/BlockInspector.tsx","src/components/editor/PageEditor.tsx","src/lib/block-style.ts","src/lib/content.ts","src/lib/validators.ts","src/lib/blocks.ts"]){
   assert.ok(file(path).length>100,path+" is missing");
  }
- for(const term of ["selectedId={selected||undefined}","onSelect={setSelected}","<BlockInspector","Duplicate block","Update published"]){
+ for(const term of ["<BuilderCanvas","onSelect={setSelected}","<BlockInspector","moveNode(","Update"]){
   assert.ok(file("src/components/editor/PageEditor.tsx").includes(term),term);
  }
 });
@@ -22,7 +22,8 @@ test("pages and posts update stable IDs instead of recreating all blocks",()=>{
  assert.ok(post.includes("blocks:updatedBlocks(d.blocks)"));
  assert.doesNotMatch(content,/deleteMany:\{\},create:normalizedBlocks/);
  assert.doesNotMatch(post,/deleteMany:\{\},create:normalizedBlocks/);
- assert.match(file("src/lib/validators.ts"),/Duplicate block ID/);
+ assert.match(file("src/lib/validators.ts"),/Duplicate widget ID/);
+ assert.match(file("src/lib/validators.ts"),/Nested layout exceeds 12 levels/);
 });
 test("style engine filters values, renders CSS variables and new widget types",()=>{
  const style=file("src/lib/block-style.ts");
@@ -37,4 +38,20 @@ test("style engine filters values, renders CSS variables and new widget types",(
   assert.ok(renderer.includes('case "'+type+'"'));
  }
  assert.ok(renderer.includes("plainText(d.content)"));
+});
+
+test("Studio nested layout renderer, registry, media picker, and builder controls are wired",()=>{
+ const tree=file("src/lib/builder-tree.ts");
+ const editor=file("src/components/editor/PageEditor.tsx");
+ const canvas=file("src/components/editor/BuilderCanvas.tsx");
+ const renderer=file("src/components/blocks/BlockRenderer.tsx");
+ const labels=file("src/lib/extra-widgets.ts");
+ for(const fn of ["findNode","insertNode","removeNode","moveNode","cloneNode"])assert.match(tree,new RegExp("function "+fn));
+ for(const type of ["container","row","column","grid"])assert.ok(labels.includes(type+":"));
+ for(const term of ["onDropNode","onDuplicate","onDelete","onMove"])assert.ok(canvas.includes(term));
+ assert.match(editor,/countNodes\(doc\.blocks\)/);
+ assert.match(renderer,/childrenOf\(b\)/);
+ assert.ok(file("src/components/editor/MediaPicker.tsx").includes("/api/media"));
+ assert.ok(file("src/components/blocks/ExtraWidgetRenderer.tsx").includes("integrationWidgets"));
+ assert.ok(file("src/app/api/public/content/route.ts").includes('status:"PUBLISHED"'));
 });
