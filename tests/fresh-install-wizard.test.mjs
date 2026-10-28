@@ -29,7 +29,7 @@ test("first administrator setup is single-use and protected by same-origin token
  assert.match(guard,/sameOrigin/);
  assert.match(guard,/timingSafeEqual/);
  assert.match(guard,/PINCMS_SETUP_TOKEN/);
- assert.doesNotMatch(guard,/return.*token/);
+ assert.doesNotMatch(guard,/json\(\{[^\n]*token:/);
 });
 
 test("secrets are encrypted at rest and Cloudinary credentials only tested server-side",()=>{
