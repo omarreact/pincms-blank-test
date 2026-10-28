@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import {databaseUnavailable} from "@/lib/database-status";
+import {databaseSchemaMissing} from "@/lib/database-status";
 import { themeSchema } from "@/lib/validators";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
@@ -8,7 +8,7 @@ export const DEFAULT_THEME: ThemeConfig = {
   name:"PinCMS Standalone",version:"1.0.0",description:"A bright, spacious editorial theme",
   styles:{colors:{primary:"#4657e8",secondary:"#101828",background:"#ffffff",foreground:"#142038",muted:"#f1f5ff",accent:"#21cda4"},fonts:{heading:"system-ui",body:"system-ui"}},
   layouts:{header:"default-header",footer:"default-footer"},templates:{home:"home",page:"default",post:"single"},
-  availableBlocks:["hero","text","heading","image","gallery","video","cta","columns","features","testimonials","pricing","faq","spacer","divider","button","stats","html"],settings:{containerWidth:"1200px",borderRadius:"14px"}
+  availableBlocks:["hero","text","heading","image","gallery","video","cta","columns","features","testimonials","pricing","faq","spacer","divider","button","stats","html","form","starRating","progressBar","alert","iconList","socialIcons","contactButtons","tabs","countdown","imageCarousel"],settings:{containerWidth:"1200px",borderRadius:"14px"}
 };
 export const NIGHT_THEME: ThemeConfig = {
   ...DEFAULT_THEME,name:"PinCMS Midnight",description:"A contemporary dark theme",styles:{...DEFAULT_THEME.styles, colors:{primary:"#7c90ff",secondary:"#f6f8ff",background:"#0d1426",foreground:"#f0f4ff",muted:"#202b46",accent:"#34e8c0"}}
@@ -19,7 +19,7 @@ export async function getActiveTheme(): Promise<ThemeConfig> {
     if(!theme)return DEFAULT_THEME;
     const parsed=themeSchema.safeParse(JSON.parse(theme.config)); return parsed.success?parsed.data:DEFAULT_THEME;
   } catch(error) {
-    if(databaseUnavailable(error))return DEFAULT_THEME;
+    if(databaseSchemaMissing(error))return DEFAULT_THEME;
     throw error;
   }
 }

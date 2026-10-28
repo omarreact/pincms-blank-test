@@ -5,9 +5,10 @@ import {resolve} from "node:path";
 
 const root=resolve(import.meta.dirname,"..");
 const file=path=>readFileSync(resolve(root,path),"utf8");
-test("visual editor ships in this blank app",()=>{
+const starter=path=>file("packages/create-pincms/template/"+path);
+test("visual editor implementation is shipped in independent starter",()=>{
  for(const path of ["src/components/editor/BlockInspector.tsx","src/components/editor/PageEditor.tsx","src/lib/block-style.ts","src/lib/content.ts","src/lib/validators.ts","src/lib/blocks.ts"]){
-  assert.ok(file(path).length>100,path+" must exist");
+  assert.equal(starter(path),file(path),path+" must stay in sync");
  }
  for(const term of ["selectedId={selected||undefined}","onSelect={setSelected}","<BlockInspector","Duplicate block","Update published"]){
   assert.ok(file("src/components/editor/PageEditor.tsx").includes(term),term);
