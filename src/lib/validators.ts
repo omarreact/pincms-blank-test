@@ -18,9 +18,21 @@ export const pageSchema = z.object({
   }).default([]),
 });
 export const postSchema = pageSchema.omit({parentId:true});
+export const cloudinaryCredentialsSchema=z.object({
+ cloudName:z.string().trim().regex(/^[a-z0-9_-]{2,80}$/i),
+ apiKey:z.string().trim().regex(/^[0-9]{6,32}$/),
+ apiSecret:z.string().trim().min(12).max(180)
+}).strict();
+export const mediaOptionSchema=z.discriminatedUnion("mode",[
+ z.object({mode:z.literal("local")}).strict(),
+ z.object({mode:z.literal("later")}).strict(),
+ z.object({mode:z.literal("existing")}).strict(),
+ z.object({mode:z.literal("cloudinary"),credentials:cloudinaryCredentialsSchema}).strict()
+]);
 export const setupSchema = z.object({ token:z.string().default(""),siteName:z.string().trim().min(2).max(100),
   name:z.string().trim().min(2).max(100), email:z.string().email().max(200),
   password:z.string().min(12).max(128), theme:z.enum(["default","night"]).default("default"),
+  media:mediaOptionSchema.default({mode:"later"}),
 });
 export const themeSchema = z.object({
   name:z.string().min(1).max(100), version:z.string().regex(/^\d+\.\d+\.\d+(?:-[\w.-]+)?$/).default("1.0.0"),
