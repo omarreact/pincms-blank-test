@@ -52,7 +52,15 @@ Open http://localhost:3000/admin/setup. The development launcher creates private
 
 Sign in at `/admin/login`, then visit Pages, Posts, Forms & submissions, Media Library, Theme Studio and Settings. Upload a small real JPEG/PNG/WebP/GIF (8 MB maximum), save a page as a draft, then publish and verify the public URL.
 
-This package synchronizes the latest stable, native Forms Studio and interactive React widgets from the main PinCMS starter. The Elementor-inspired advanced visual builder and the additional experimental editor branches are still separate work, not requirements for this clean installation test.
+This test branch includes the PinCMS Studio nested visual editor and expanded widget catalog. There are **120 registered widget names**: 29 existing and 91 additional catalog entries. **45 integration-only widgets** (WordPress/WooCommerce/payment/providers) are visibly gated until their required backends are connected. Native equivalents are not the official Elementor Pro plugin and several renderers remain basic.
+
+### Studio editor testing
+
+After installing/signing in, go to **Admin → Pages → New**. In the editor, drag **Container → Row → Column** or **Grid** elements onto the canvas, then add text, image, forms or other supported widgets inside. Use **Layers** to inspect the structure, the right inspector for content/style, and the device buttons for different responsive widths. Save a draft, publish, reopen and verify the public route.
+
+The media chooser uses the project's existing authenticated media API. On Vercel, file uploads require Cloudinary or another persistent storage configuration; the first-run installer remains the authoritative configuration flow.
+
+The standalone editor rejects unsupported provider-only widgets rather than displaying nonfunctional checkout or account interfaces. Keep production database credentials and administrator sessions unchanged during upgrades.
 
 ## Verification
 
