@@ -9,12 +9,26 @@ export const pageSchema = z.object({
   parentId:z.string().optional().nullable(),
   publishedAt:z.string().datetime().optional().nullable(), blocks:z.array(blockSchema).max(120).superRefine((blocks,ctx)=>{
    const ids=new Set<string>();
-   for(let i=0;i<blocks.length;i++){
-    const id=blocks[i].id;
-    if(!id)continue;
-    if(ids.has(id))ctx.addIssue({code:"custom",path:[i,"id"],message:"Duplicate block ID"});
-    ids.add(id);
-   }
+   let count=0;
+   const visit=(nodes:unknown[],depth:number,path:(string|number)[])=>{
+    if(depth>12){ctx.addIssue({code:"custom",path,message:"Nested layout exceeds 12 levels"});return}
+    for(let i=0;i<nodes.length;i++){
+     count++;
+     if(count>120){ctx.addIssue({code:"custom",path,message:"Maximum 120 total widgets"});return}
+     const parsed=blockSchema.safeParse(nodes[i]);
+     if(!parsed.success){ctx.addIssue({code:"custom",path:[...path,i],message:"Invalid nested widget"});continue}
+     const node=parsed.data;
+     if(node.id&&ids.has(node.id))ctx.addIssue({code:"custom",path:[...path,i,"id"],message:"Duplicate widget ID"});
+     if(node.id)ids.add(node.id);
+     const children=node.data.children;
+     if(children!==undefined){
+      if(!["container","row","column","grid"].includes(node.type)||!Array.isArray(children)){
+       ctx.addIssue({code:"custom",path:[...path,i,"data","children"],message:"Only layouts can contain child widgets"});
+      }else visit(children,depth+1,[...path,i,"data","children"]);
+     }
+    }
+   };
+   visit(blocks,0,[]);
   }).default([]),
 });
 export const postSchema = pageSchema.omit({parentId:true});
