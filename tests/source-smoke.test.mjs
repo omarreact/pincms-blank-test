@@ -9,7 +9,7 @@ test('original seed cannot create known insecure default login',()=>{
  const seed=read('prisma/seed.ts');assert.doesNotMatch(seed,/admin123|admin@example\.com/);assert.match(seed,/No demo users/);
 });
 test('installer requires setup token and does not allow second admin',()=>{
- const s=read('src/app/api/setup/route.ts');assert.match(s,/timingSafeEqual/);assert.match(s,/PINCMS_SETUP_TOKEN/);assert.match(s,/tx\.user\.count\(\)/);
+ const s=read('src/app/api/setup/route.ts');assert.match(s,/installationGuard/);const guard=read('src/lib/setup-guard.ts');assert.match(guard,/timingSafeEqual/);assert.match(guard,/PINCMS_SETUP_TOKEN/);assert.match(s,/tx\.user\.count\(\)/);
 });
 test('mutation endpoints always authorize roles',()=>{
  for(const route of ['src/app/api/pages/route.ts','src/app/api/pages/[id]/route.ts','src/app/api/posts/route.ts','src/app/api/posts/[id]/route.ts','src/app/api/media/route.ts','src/app/api/themes/route.ts','src/app/api/settings/route.ts','src/app/api/users/route.ts'])assert.match(read(route),/hasRole\(/,route);
