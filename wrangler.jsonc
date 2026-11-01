@@ -16,6 +16,8 @@
     "binding": "ASSETS"
   },
   "vars": {
-    "PINCMS_RUNTIME": "cloudflare"
-  }
+    "PINCMS_RUNTIME": "cloudflare",
+    "NEXTAUTH_URL": "https://pincms-workers-stage.farukkhanone.workers.dev"
+  },
+  "preview_urls": false
 }
