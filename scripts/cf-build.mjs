@@ -31,7 +31,14 @@ function run(pkg,args,binName){
 }
 try{
   run("prisma",["generate","--schema","prisma/schema.cloudflare.prisma"]);
-  run("@opennextjs/cloudflare",["build"],"opennextjs-cloudflare");
+  // OpenNext package exports its API from a generated entry; do not resolve a
+  // fabricated /package.json path. Execute the installed CLI directly.
+  const command=process.platform==="win32"?"npx.cmd":"npx";
+  const build=spawnSync(command,["--no-install","opennextjs-cloudflare","build"],{
+    cwd:root,stdio:"inherit",env,shell:false
+  });
+  if(build.error)throw build.error;
+  if(build.status!==0)throw new Error("OpenNext exited with status "+build.status);
 }catch(error){
   console.error("[PinCMS Cloudflare build] "+(error instanceof Error?error.message:"Failed"));
   process.exitCode=1;
