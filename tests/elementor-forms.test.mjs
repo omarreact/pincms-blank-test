@@ -42,7 +42,10 @@ test("standalone installation includes complete forms implementation",()=>{
   "src/app/api/forms/[id]/submissions/route.ts","src/app/api/forms/public/[slug]/route.ts"
  ];
  for(const path of paths)assert.ok(read(path).length>40,"Missing standalone implementation: "+path);
- assert.match(read("src/app/admin/(console)/layout.tsx"),/href:"\/admin\/forms"/);
+ // Forms remain available through the authorized navigation model, not a literal link array in layout.
+ assert.match(read("src/app/admin/(console)/layout.tsx"),/AdminWorkspaceNavigation items=\{accessible\}/);
+ assert.match(read("src/lib/admin-navigation.ts"),/href:"\/admin\/forms"/);
+ assert.match(read("src/lib/admin-navigation.ts"),/access:"editor"/);
  assert.match(read("src/components/blocks/BlockRenderer.tsx"),/case "form"/);
  assert.match(read("src/components/editor/BlockInspector.tsx"),/form:\[\{key:"slug"/);
  assert.match(read("src/components/forms/FormWidget.tsx"),/formElement\.reset\(\)/);

@@ -205,3 +205,34 @@
 
 .pc-widget.pc-widget-gated{border-style:dashed;opacity:.58;background:#1b1e26}
 .pc-widget.pc-widget-gated:hover{opacity:.82;border-color:#f5bd7b}
+
+/* Native CMS workspace: predictable navigation, no heavy editor bundle in the shell. */
+.pc-nav-groups{overflow-y:auto;padding-bottom:18px;scrollbar-width:thin}
+.pc-nav-group>.admin-nav-label{padding-top:17px;padding-bottom:7px}
+.pc-section-nav{padding-bottom:3px}
+.admin-side-nav a.pc-nav-link:not([aria-current="page"]){background:transparent;color:#60646c;font-weight:500}
+.admin-side-nav a.pc-nav-link[aria-current="page"]{background:#f0f2ff;color:#252868;font-weight:750;box-shadow:inset 3px 0 #4f46e5}
+.admin-side-nav a.pc-nav-link:hover{background:#f5f5fc;color:#222}
+.admin-topbar-right{gap:13px}
+.pc-switch-trigger{display:flex;align-items:center;gap:10px;min-width:235px;background:#fafafa;border:1px solid #e5e7eb;border-radius:8px;color:#626773;font-size:12px;font-weight:500;padding:9px 12px;text-align:left}
+.pc-switch-trigger span{flex:1}
+.pc-switch-trigger kbd{font:10px/1.4 inherit;color:#9195a0;border:1px solid #e1e1e7;padding:1px 5px;border-radius:4px;background:white}
+.pc-switch-trigger:hover,.pc-switch-trigger:focus-visible{border-color:#7c83bc;outline-color:#7c83bc}
+.pc-switch-overlay{position:fixed;inset:0;z-index:1600;background:rgba(12,17,31,.56);display:flex;justify-content:center;align-items:flex-start;padding:clamp(35px,12vh,150px) 12px 20px}
+.pc-switch-dialog{background:#fff;border:1px solid #dfe2ea;border-radius:14px;box-shadow:0 24px 90px rgba(0,0,0,.24);width:min(540px,100%);max-height:calc(100vh - 65px);overflow:hidden;display:flex;flex-direction:column;color:#181b26;font-size:14px;font-weight:400}
+.pc-switch-input-row{display:flex;align-items:center;gap:12px;padding:14px 17px;border-bottom:1px solid #e8eaf0}
+.pc-switch-input-row input{background:transparent;border:0;outline:0;flex:1;min-width:0;font:inherit;font-size:15px;color:#222}
+.pc-switch-input-row input::placeholder{color:#989ba4}
+.pc-switch-input-row input::-webkit-search-cancel-button{display:none}
+.pc-switch-input-row button{display:grid;place-items:center;background:#f3f4f8;border:0;border-radius:6px;padding:5px;cursor:pointer}
+.pc-switch-results{padding:7px;overflow-y:auto;max-height:min(480px,55vh)}
+.pc-switch-results button{display:flex;align-items:center;gap:12px;width:100%;padding:11px 12px;background:transparent;border:0;border-radius:7px;text-align:left;cursor:pointer;color:#303340}
+.pc-switch-results button>span{flex:1;font-weight:650}
+.pc-switch-results button small{display:block;color:#9194a0;font-size:11px;font-weight:450;margin-top:2px}
+.pc-switch-results button.pc-switch-selected,.pc-switch-results button:hover{background:#f0f1ff;color:#34329c}
+.pc-switch-empty{text-align:center;color:#777;padding:24px 10px}
+.pc-switch-help{margin:0;padding:11px 16px;font-size:11px;color:#8a8d98;border-top:1px solid #e8eaf0}
+.pc-mobile-nav a.pc-nav-link[aria-current="page"]{background:#f0f2ff;color:#252868;border-color:#babcf0;font-weight:700}
+@media(max-width:1100px){.pc-switch-trigger{min-width:160px}.pc-switch-trigger kbd{display:none}}
+@media(max-width:760px){.pc-switch-trigger{min-width:0;padding:7px 9px}.pc-switch-trigger span{display:none}.pc-switch-overlay{padding-top:18px}.pc-switch-dialog{max-height:85vh}.pc-mobile-nav{scrollbar-width:thin}}
+@media(prefers-reduced-motion:reduce){.pc-switch-dialog,.pc-switch-overlay{animation:none;transition:none}}
