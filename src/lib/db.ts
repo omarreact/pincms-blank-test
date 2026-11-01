@@ -14,5 +14,17 @@ const createClient=()=>new PrismaClient({
   ...(worker?{adapter:new PrismaPg({connectionString})}:{}),
   log:process.env.NODE_ENV==="development"?["query","error","warn"]:["error"]
 });
-export const prisma=worker?createClient():(globalForPrisma.prisma??createClient());
+// Explicitly fail closed when an isolated Worker has not received its
+// DATABASE_URL secret. Public pages can render their existing setup fallback
+// instead of attempting network access using placeholder credentials.
+const missingConfigError=()=>Object.assign(
+  new Error("Cloudflare DATABASE_URL has not been configured."),
+  {code:"P1001",name:"PrismaClientInitializationError"}
+);
+const unconfigured=new Proxy({} as PrismaClient,{
+  get(){throw missingConfigError();}
+});
+export const prisma=worker&&!process.env.DATABASE_URL
+  ? unconfigured
+  : worker?createClient():(globalForPrisma.prisma??createClient());
 if(!worker&&process.env.NODE_ENV!=="production")globalForPrisma.prisma=prisma;
