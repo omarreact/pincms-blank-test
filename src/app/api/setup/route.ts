@@ -17,7 +17,7 @@ export async function POST(req:NextRequest){
  try {
   if(await prisma.user.count())return NextResponse.json({error:"This PinCMS installation already has an administrator."},{status:409});
  }catch{return NextResponse.json({error:"The database is not ready. Complete database configuration before creating an administrator."},{status:503})}
- if(process.env.VERCEL&&media.mode==="local")return NextResponse.json({error:"Vercel uploads need durable cloud storage. Choose Cloudinary or configure it later."},{status:400});
+ if((process.env.VERCEL||process.env.PINCMS_RUNTIME==="cloudflare")&&media.mode==="local")return NextResponse.json({error:"Hosted uploads need durable cloud storage. Choose Cloudinary or configure it later."},{status:400});
  if(media.mode==="existing"&&!environmentCloudinary())return NextResponse.json({error:"No Cloudinary environment credentials are configured."},{status:400});
  if(media.mode==="cloudinary"){
   const test=await verifyCloudinary(media.credentials);

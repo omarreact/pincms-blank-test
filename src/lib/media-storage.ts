@@ -23,7 +23,7 @@ export async function storeImage(bytes:Buffer,mime:string):Promise<{url:string;p
   return {url:result.secure_url,provider:"cloudinary"};
  }
  // For dedicated Node servers/dev only. On Vercel files will not persist.
- if(process.env.VERCEL)throw new Error("Media storage is not configured. Set Cloudinary credentials in PinCMS installation or Vercel environment settings.");
+ if(process.env.VERCEL||process.env.PINCMS_RUNTIME==="cloudflare")throw new Error("Media storage is not configured. Set Cloudinary credentials for this hosted CMS.");
  const uuid=crypto.randomUUID();const name=`${uuid}.${types[mime]}`;
  const dir=path.resolve(process.env.UPLOAD_DIR||"./public/uploads");await mkdir(dir,{recursive:true});await writeFile(path.join(dir,name),bytes,{flag:"wx"});
  return {url:`/uploads/${name}`,provider:"local"};
