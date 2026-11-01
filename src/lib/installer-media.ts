@@ -47,10 +47,10 @@ export async function mediaSettingStatus(){
  try{
   const stored=(await prisma.setting.findUnique({where:{key:settingKey},select:{value:true}}))?.value;
   if(stored){const setting=JSON.parse(stored) as {mode?:string};if(setting.mode==="cloudinary")return {provider:"cloudinary",configured:true,source:"encrypted"};
-   if(setting.mode==="local")return {provider:"local",configured:!process.env.VERCEL,source:"setup"};
+   if(setting.mode==="local")return {provider:"local",configured:!(process.env.VERCEL||process.env.PINCMS_RUNTIME==="cloudflare"),source:"setup"};
   }
  }catch{}
- return {provider:process.env.VERCEL?"unconfigured":"local",configured:!process.env.VERCEL,source:"default"};
+ return {provider:process.env.VERCEL?"unconfigured":"local",configured:!(process.env.VERCEL||process.env.PINCMS_RUNTIME==="cloudflare"),source:"default"};
 }
 export function storedMediaValue(option:MediaOption):string|null{
  if(option.mode==="existing")return null;
