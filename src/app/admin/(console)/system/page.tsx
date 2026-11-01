@@ -13,7 +13,7 @@ export default async function SystemHealth(){
   try{[accounts,content]=await prisma.$transaction([prisma.user.count(),prisma.page.count()]);database="Connected";}
   catch{database="Connection or schema error";}
   const storage=process.env.DATABASE_URL?.startsWith("file:")?"SQLite":"Configured external database";
-  const hosted=Boolean(process.env.VERCEL);
+  const hosted=Boolean(process.env.VERCEL||process.env.PINCMS_RUNTIME==="cloudflare");
   return <section className="space-y-7">
     <div><h1 className="text-3xl font-black">System health & operations</h1><p className="mt-2 text-slate-600">Live, read-only diagnostics. No shell access, secret values, or arbitrary package installation is exposed to the browser.</p></div>
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
