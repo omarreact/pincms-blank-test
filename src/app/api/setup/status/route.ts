@@ -7,7 +7,7 @@ import {mediaSettingStatus} from "@/lib/installer-media";
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
 export async function GET(req:NextRequest){
- const hosted=Boolean(process.env.VERCEL);
+ const hosted=Boolean(process.env.VERCEL||process.env.PINCMS_RUNTIME==="cloudflare");
  const token=process.env.PINCMS_SETUP_TOKEN||"";
  const secret=process.env.NEXTAUTH_SECRET||"";
  const common={
